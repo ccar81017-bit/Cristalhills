@@ -65,30 +65,38 @@ function loadServer(idx) {
     if (document.getElementById('mc-version')) document.getElementById('mc-version').textContent = server.version;
     if (document.getElementById('features-title')) document.getElementById('features-title').textContent = server.featuresTitle || 'Почему ' + server.name + '?';
     
-    // Рендер иконок и текстов преимуществ
-    if (server.features && server.features.length >= 4) {
-        for (var i = 0; i < 4; i++) {
-            var f = server.features[i];
-            var iconEl = document.getElementById('feature-icon-' + (i + 1));
-            var titleEl = document.getElementById('feature-title-' + (i + 1));
-            var descEl = document.getElementById('feature-desc-' + (i + 1));
-            if (iconEl) iconEl.textContent = f.icon || '⭐';
-            if (titleEl) titleEl.textContent = f.title || '';
-            if (descEl) descEl.textContent = f.desc || '';
-        }
+    var features = server.features || [
+        { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история с захватывающими приключениями' },
+        { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои и турниры' },
+        { icon: '🏰', title: 'Строительство', desc: 'Создавай замки вместе с друзьями' },
+        { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбное сообщество игроков' }
+    ];
+    
+    for (var i = 0; i < 4; i++) {
+        var f = features[i];
+        var iconEl = document.getElementById('feature-icon-' + (i + 1));
+        var titleEl = document.getElementById('feature-title-' + (i + 1));
+        var descEl = document.getElementById('feature-desc-' + (i + 1));
+        if (iconEl) iconEl.textContent = f.icon || '⭐';
+        if (titleEl) titleEl.textContent = f.title || '';
+        if (descEl) descEl.textContent = f.desc || '';
     }
     
-    // Рендер иконок и текстов статистики
-    if (server.stats && server.stats.length >= 4) {
-        for (var j = 0; j < 4; j++) {
-            var s = server.stats[j];
-            var iconEl2 = document.getElementById('stat-icon-' + (j + 1));
-            var valueEl = document.getElementById('stat-value-' + (j + 1));
-            var labelEl = document.getElementById('stat-label-' + (j + 1));
-            if (iconEl2) iconEl2.textContent = s.icon || '⭐';
-            if (valueEl) valueEl.textContent = s.value || '';
-            if (labelEl) labelEl.textContent = s.label || '';
-        }
+    var stats = server.stats || [
+        { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
+        { icon: '🌍', value: '3+', label: 'Регионов' },
+        { icon: '📜', value: '50+', label: 'Квестов' },
+        { icon: '⚡', value: '24/7', label: 'Работа сервера' }
+    ];
+    
+    for (var j = 0; j < 4; j++) {
+        var s = stats[j];
+        var iconEl2 = document.getElementById('stat-icon-' + (j + 1));
+        var valueEl = document.getElementById('stat-value-' + (j + 1));
+        var labelEl = document.getElementById('stat-label-' + (j + 1));
+        if (iconEl2) iconEl2.textContent = s.icon || '⭐';
+        if (valueEl) valueEl.textContent = s.value || '';
+        if (labelEl) labelEl.textContent = s.label || '';
     }
     
     const ipContainer = document.getElementById('ip-buttons');
@@ -196,6 +204,7 @@ function handleLogin(e) {
     localStorage.setItem('cristalhills_current', JSON.stringify(currentUser));
     loadCurrentUser();
     updateUI();
+    updateProfile();
     navigateTo('profile');
     e.target.reset();
 }
@@ -505,8 +514,8 @@ function saveAdminSettings() {
     server.version = document.getElementById('admin-version').value.trim();
     server.featuresTitle = document.getElementById('admin-features-title').value.trim();
     
-    const ipInputs = document.querySelectorAll('#admin-ips-list input');
-    const newIps = [];
+    var ipInputs = document.querySelectorAll('#admin-ips-list input');
+    var newIps = [];
     for (var i = 0; i < ipInputs.length; i += 2) {
         var nameInput = ipInputs[i];
         var ipInput = ipInputs[i + 1];
@@ -516,8 +525,8 @@ function saveAdminSettings() {
     }
     server.ips = newIps;
     
-    const buildInputs = document.querySelectorAll('#admin-builds-list input');
-    const newBuilds = [];
+    var buildInputs = document.querySelectorAll('#admin-builds-list input');
+    var newBuilds = [];
     for (var j = 0; j < buildInputs.length; j += 2) {
         var nameInput2 = buildInputs[j];
         var urlInput = buildInputs[j + 1];
@@ -527,7 +536,6 @@ function saveAdminSettings() {
     }
     server.builds = newBuilds;
     
-    // Сохраняем кастомизацию features
     var newFeatures = [];
     for (var k = 0; k < 4; k++) {
         var iconInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="icon"]');
@@ -539,7 +547,6 @@ function saveAdminSettings() {
     }
     server.features = newFeatures;
     
-    // Сохраняем кастомизацию stats
     var newStats = [];
     for (var m = 0; m < 4; m++) {
         var iconInput2 = document.querySelector('input[data-sidx="' + m + '"][data-sfield="icon"]');
@@ -569,10 +576,10 @@ function renderUsersList() {
         const card = document.createElement('div');
         card.className = 'user-card' + (isAdmin ? ' admin' : '');
         card.dataset.username = u.username.toLowerCase();
-        let roleText = isAdmin ? u.rank : 'Игрок';
+        var roleText = isAdmin ? u.rank : 'Игрок';
         if (u.chiefFor !== undefined) roleText = '👑 Главный за ' + servers[u.chiefFor].name;
         else if (u.helperFor !== undefined) roleText = '🔹 Помощник ' + servers[u.helperFor].name;
-        let actionsHtml = '';
+        var actionsHtml = '';
         if (!isAdmin && !isCurrentUser && currentUser && currentUser.isAdmin) {
             actionsHtml = '<div class="user-actions"><button class="btn btn-primary btn-sm" onclick="openAssignModal(\'' + escapeHtml(u.username) + '\')">🎯</button></div>';
         }
