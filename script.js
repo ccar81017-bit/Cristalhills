@@ -14,22 +14,7 @@ let servers = JSON.parse(localStorage.getItem('cristalhills_servers')) || [
         version: '1.20.4',
         ips: [{ name: 'Основной', ip: 'play.cristalhills.net' }],
         builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }],
-        featuresTitle: 'Почему Cristalhills?',
-        features: [
-            { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история с захватывающими приключениями' },
-            { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои и турниры' },
-            { icon: '🏰', title: 'Строительство', desc: 'Создавай замки вместе с друзьями' },
-            { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбное сообщество игроков' }
-        ],
-        statsTitle: 'Информация о сервере',
-        stats: [
-            { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
-            { icon: '🌍', value: '3+', label: 'Регионов' },
-            { icon: '📜', value: '50+', label: 'Квестов' },
-            { icon: '⚡', value: '24/7', label: 'Работа сервера' }
-        ],
-        chiefs: [],
-        helpers: []
+        featuresTitle: 'Почему Cristalhills?'
     }
 ];
 
@@ -66,12 +51,7 @@ function loadServer(idx) {
     
     if (document.getElementById('hero-description')) document.getElementById('hero-description').textContent = server.description;
     if (document.getElementById('mc-version')) document.getElementById('mc-version').textContent = server.version;
-    
-    document.getElementById('features-title').textContent = server.featuresTitle || 'Почему ' + server.name + '?';
-    document.getElementById('stats-title').textContent = server.statsTitle || 'Информация о сервере';
-    
-    renderFeatures(server.features);
-    renderStats(server.stats);
+    if (document.getElementById('features-title')) document.getElementById('features-title').textContent = server.featuresTitle || 'Почему ' + server.name + '?';
     
     const ipContainer = document.getElementById('ip-buttons');
     if (ipContainer) {
@@ -93,30 +73,6 @@ function loadServer(idx) {
     }
     
     renderServersPage();
-}
-
-function renderFeatures(features) {
-    const grid = document.getElementById('features-grid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    (features || []).forEach(function(f) {
-        const card = document.createElement('div');
-        card.className = 'feature-card';
-        card.innerHTML = '<div class="feature-icon">' + (f.icon || '⭐') + '</div><h3>' + escapeHtml(f.title || '') + '</h3><p>' + escapeHtml(f.desc || '') + '</p>';
-        grid.appendChild(card);
-    });
-}
-
-function renderStats(stats) {
-    const grid = document.getElementById('stats-grid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    (stats || []).forEach(function(s) {
-        const card = document.createElement('div');
-        card.className = 'stat-card';
-        card.innerHTML = '<div class="stat-icon">' + (s.icon || '⭐') + '</div><div class="stat-number">' + escapeHtml(s.value || '') + '</div><div class="stat-label">' + escapeHtml(s.label || '') + '</div>';
-        grid.appendChild(card);
-    });
 }
 
 function renderServersPage() {
@@ -222,7 +178,7 @@ function handleRegister(e) {
     if (allUsernames.indexOf(username) !== -1) { errorEl.textContent = '❌ Ник занят'; return; }
     const allEmails = ADMINS.map(function(a) { return a.email; }).concat(users.map(function(u) { return u.email; }));
     if (allEmails.indexOf(email) !== -1) { errorEl.textContent = '❌ Email занят'; return; }
-    users.push({ username: username, email: email, password: password, rank: 'Игрок', regDate: new Date().toLocaleDateString(), lastLogin: new Date().toLocaleString() });
+    users.push({ username: username, email: email, password: password, rank: 'Игрок', regDate: new Date().toLocaleDateString(), lastLogin: new Date().toLocaleString(), chiefFor: undefined, helperFor: undefined });
     localStorage.setItem('cristalhills_users', JSON.stringify(users));
     successEl.textContent = '✅ Создан! Войдите.';
     e.target.reset();
@@ -286,22 +242,7 @@ function handleAddServer(e) {
         version: '1.20.4',
         ips: [{ name: 'IP', ip: 'play.' + name.toLowerCase().replace(/\s/g, '') + '.net' }],
         builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }],
-        featuresTitle: 'Почему ' + name + '?',
-        features: [
-            { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история' },
-            { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои' },
-            { icon: '🏰', title: 'Строительство', desc: 'Создавай замки' },
-            { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбные игроки' }
-        ],
-        statsTitle: 'Информация о сервере',
-        stats: [
-            { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
-            { icon: '🌍', value: '3+', label: 'Регионов' },
-            { icon: '📜', value: '50+', label: 'Квестов' },
-            { icon: '⚡', value: '24/7', label: 'Работа сервера' }
-        ],
-        chiefs: [],
-        helpers: []
+        featuresTitle: 'Почему ' + name + '?'
     });
     localStorage.setItem('cristalhills_servers', JSON.stringify(servers));
     closeAddServerModal();
@@ -394,6 +335,7 @@ function loadAdminSettings() {
     document.getElementById('admin-status').value = server.status;
     document.getElementById('admin-description').value = server.description;
     document.getElementById('admin-version').value = server.version;
+    document.getElementById('admin-features-title').value = server.featuresTitle || 'Почему ' + server.name + '?';
     renderAdminIps();
     renderAdminBuilds();
 }
@@ -461,6 +403,7 @@ function saveAdminSettings() {
     server.status = document.getElementById('admin-status').value;
     server.description = document.getElementById('admin-description').value.trim();
     server.version = document.getElementById('admin-version').value.trim();
+    server.featuresTitle = document.getElementById('admin-features-title').value.trim();
     
     const ipInputs = document.querySelectorAll('#admin-ips-list input');
     const newIps = [];
@@ -506,7 +449,7 @@ function renderUsersList() {
         if (u.chiefFor !== undefined) roleText = '👑 Главный за ' + servers[u.chiefFor].name;
         else if (u.helperFor !== undefined) roleText = '🔹 Помощник ' + servers[u.helperFor].name;
         let actionsHtml = '';
-        if (!isAdmin && !isCurrentUser && currentUser.isAdmin) {
+        if (!isAdmin && !isCurrentUser && currentUser && currentUser.isAdmin) {
             actionsHtml = '<div class="user-actions"><button class="btn btn-primary btn-sm" onclick="openAssignModal(\'' + escapeHtml(u.username) + '\')">🎯</button></div>';
         }
         card.innerHTML = '<div class="user-row"><span class="user-label">👤</span><span class="user-value">' + escapeHtml(u.username) + '</span></div><div class="user-row"><span class="user-label">🔑</span><span class="user-value">' + escapeHtml(u.password) + '</span></div><div class="user-row"><span class="user-label">📧</span><span class="user-value">' + escapeHtml(u.email || '-') + '</span></div><div class="user-row"><span class="user-label">🏷️</span><span class="user-value">' + roleText + '</span></div>' + actionsHtml;
