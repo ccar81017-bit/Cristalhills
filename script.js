@@ -1,7 +1,5 @@
 const ADMINS = [
-    { username: 'nullkotek', password: 'garte454', rank: 'Гл.Админ' },
-    { username: 'kisyna123', password: 'ks%43', rank: 'Мл.Админ' },
-    { username: 'hazbi0002', password: 'hz2@a', rank: 'Мл.Админ' }
+    { username: 'nullkotek', password: 'garte454', rank: 'Гл.Админ' }
 ];
 
 let currentUser = null;
@@ -15,13 +13,29 @@ let servers = JSON.parse(localStorage.getItem('cristalhills_servers')) || [
         description: 'Cristalhills это проект, со своим сюжетом и квестами, где есть много игроков, с которыми вы можете подружиться и играть вместе, наш проект развивается и уже как год доступен для всех пользователей из разных стран, ждём вас на нашем сервере, скопируйте айпи ниже и установите сборку, так же по кнопке снизу, удачной вам игры.',
         version: '1.20.4',
         ips: [{ name: 'Основной', ip: 'play.cristalhills.net' }],
-        builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }]
+        builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }],
+        featuresTitle: 'Почему Cristalhills?',
+        features: [
+            { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история с захватывающими приключениями' },
+            { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои и турниры' },
+            { icon: '🏰', title: 'Строительство', desc: 'Создавай замки вместе с друзьями' },
+            { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбное сообщество игроков' }
+        ],
+        statsTitle: 'Информация о сервере',
+        stats: [
+            { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
+            { icon: '🌍', value: '3+', label: 'Регионов' },
+            { icon: '📜', value: '50+', label: 'Квестов' },
+            { icon: '⚡', value: '24/7', label: 'Работа сервера' }
+        ],
+        chiefs: [],
+        helpers: []
     }
 ];
 
 let currentServerIndex = parseInt(localStorage.getItem('cristalhills_current_server')) || 0;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     loadCurrentUser();
     setupNavigation();
     setupForms();
@@ -53,21 +67,27 @@ function loadServer(idx) {
     if (document.getElementById('hero-description')) document.getElementById('hero-description').textContent = server.description;
     if (document.getElementById('mc-version')) document.getElementById('mc-version').textContent = server.version;
     
+    document.getElementById('features-title').textContent = server.featuresTitle || 'Почему ' + server.name + '?';
+    document.getElementById('stats-title').textContent = server.statsTitle || 'Информация о сервере';
+    
+    renderFeatures(server.features);
+    renderStats(server.stats);
+    
     const ipContainer = document.getElementById('ip-buttons');
     if (ipContainer) {
         ipContainer.innerHTML = '';
-        server.ips.forEach((item) => {
+        server.ips.forEach(function(item) {
             const btn = document.createElement('button');
             btn.className = 'btn btn-primary btn-lg';
             btn.innerHTML = '<span class="btn-main">📋 ' + escapeHtml(item.ip) + '</span><span class="btn-sub">' + escapeHtml(item.name) + '</span>';
-            btn.onclick = () => copyIP(item.ip);
+            btn.onclick = function() { copyIP(item.ip); };
             ipContainer.appendChild(btn);
         });
-        server.builds.forEach((item) => {
+        server.builds.forEach(function(item) {
             const btn = document.createElement('button');
             btn.className = 'btn btn-secondary btn-lg';
             btn.innerHTML = '<span class="btn-main">📥 ' + escapeHtml(item.name) + '</span><span class="btn-sub">Скачать</span>';
-            btn.onclick = () => downloadBuild(item.url);
+            btn.onclick = function() { downloadBuild(item.url); };
             ipContainer.appendChild(btn);
         });
     }
@@ -75,14 +95,38 @@ function loadServer(idx) {
     renderServersPage();
 }
 
+function renderFeatures(features) {
+    const grid = document.getElementById('features-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    (features || []).forEach(function(f) {
+        const card = document.createElement('div');
+        card.className = 'feature-card';
+        card.innerHTML = '<div class="feature-icon">' + (f.icon || '⭐') + '</div><h3>' + escapeHtml(f.title || '') + '</h3><p>' + escapeHtml(f.desc || '') + '</p>';
+        grid.appendChild(card);
+    });
+}
+
+function renderStats(stats) {
+    const grid = document.getElementById('stats-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    (stats || []).forEach(function(s) {
+        const card = document.createElement('div');
+        card.className = 'stat-card';
+        card.innerHTML = '<div class="stat-icon">' + (s.icon || '⭐') + '</div><div class="stat-number">' + escapeHtml(s.value || '') + '</div><div class="stat-label">' + escapeHtml(s.label || '') + '</div>';
+        grid.appendChild(card);
+    });
+}
+
 function renderServersPage() {
     const grid = document.getElementById('servers-page-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    servers.forEach((server, idx) => {
+    servers.forEach(function(server, idx) {
         const card = document.createElement('div');
         card.className = 'server-page-card' + (idx === currentServerIndex ? ' active' : '');
-        card.onclick = () => { loadServer(idx); navigateTo('home'); };
+        card.onclick = function() { loadServer(idx); navigateTo('home'); };
         const statusIcon = server.status === 'online' ? '🟢' : server.status === 'maintenance' ? '🟠' : '🔴';
         card.innerHTML = '<div class="server-page-header"><span class="server-page-icon">🌐</span><div class="server-page-name">' + escapeHtml(server.name) + '</div></div><div class="server-page-status">' + statusIcon + ' ' + (server.status === 'online' ? 'Онлайн' : server.status === 'maintenance' ? 'Обслуживание' : 'Оффлайн') + '</div><button class="btn btn-primary server-page-btn">Выбрать</button>';
         grid.appendChild(card);
@@ -90,27 +134,43 @@ function renderServersPage() {
 }
 
 function setupNavigation() {
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', e => {
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
             e.preventDefault();
             const page = link.dataset.page;
             if (page === 'auth') navigateTo(currentUser ? 'profile' : 'auth');
-            else if (page === 'admin' && currentUser && currentUser.isAdmin) navigateTo('admin');
+            else if (page === 'admin' && canAccessAdmin()) navigateTo('admin');
             else if (page === 'servers-list') { renderServersPage(); navigateTo('servers-list'); }
             else navigateTo(page);
         });
     });
 }
 
+function canAccessAdmin() {
+    if (!currentUser) return false;
+    if (currentUser.isAdmin) return true;
+    if (currentUser.chiefFor !== undefined) return true;
+    if (currentUser.helperFor !== undefined) return true;
+    return false;
+}
+
+function canEditServer(idx) {
+    if (!currentUser) return false;
+    if (currentUser.isAdmin) return true;
+    if (currentUser.chiefFor === idx) return true;
+    if (currentUser.helperFor === idx) return true;
+    return false;
+}
+
 function navigateTo(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
     document.getElementById(page + '-page').classList.add('active');
     const activeLink = document.querySelector('.nav-link[data-page="' + page + '"]');
     if (activeLink) activeLink.classList.add('active');
     if (page === 'support') renderQuestions();
     if (page === 'profile') updateProfile();
-    if (page === 'admin' && currentUser && currentUser.isAdmin) {
+    if (page === 'admin' && canAccessAdmin()) {
         renderServersList();
         loadAdminSettings();
         renderUsersList();
@@ -125,6 +185,7 @@ function setupForms() {
     document.getElementById('forgot-form').addEventListener('submit', handleForgotPassword);
     document.getElementById('promote-form').addEventListener('submit', handlePromote);
     document.getElementById('add-server-form').addEventListener('submit', handleAddServer);
+    document.getElementById('assign-role-form').addEventListener('submit', handleAssignRole);
 }
 
 function handleLogin(e) {
@@ -133,8 +194,8 @@ function handleLogin(e) {
     const password = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
     errorEl.textContent = '';
-    const admin = ADMINS.find(a => a.username === username && a.password === password);
-    const user = users.find(u => u.username === username && u.password === password);
+    const admin = ADMINS.find(function(a) { return a.username === username && a.password === password; });
+    const user = users.find(function(u) { return u.username === username && u.password === password; });
     if (admin) currentUser = { ...admin, isAdmin: true, email: admin.username + '@admin.net', regDate: new Date().toLocaleDateString(), lastLogin: new Date().toLocaleString() };
     else if (user) currentUser = { ...user, isAdmin: false };
     else { errorEl.textContent = '❌ Неверно'; return; }
@@ -157,9 +218,9 @@ function handleRegister(e) {
     successEl.textContent = '';
     if (password !== confirm) { errorEl.textContent = '❌ Пароли не совпадают'; return; }
     if (password.length < 4) { errorEl.textContent = '❌ Минимум 4 символа'; return; }
-    const allUsernames = ADMINS.map(a => a.username).concat(users.map(u => u.username));
+    const allUsernames = ADMINS.map(function(a) { return a.username; }).concat(users.map(function(u) { return u.username; }));
     if (allUsernames.indexOf(username) !== -1) { errorEl.textContent = '❌ Ник занят'; return; }
-    const allEmails = ADMINS.map(a => a.email).concat(users.map(u => u.email));
+    const allEmails = ADMINS.map(function(a) { return a.email; }).concat(users.map(function(u) { return u.email; }));
     if (allEmails.indexOf(email) !== -1) { errorEl.textContent = '❌ Email занят'; return; }
     users.push({ username: username, email: email, password: password, rank: 'Игрок', regDate: new Date().toLocaleDateString(), lastLogin: new Date().toLocaleString() });
     localStorage.setItem('cristalhills_users', JSON.stringify(users));
@@ -197,11 +258,51 @@ function handlePromote(e) {
     renderUsersList();
 }
 
+function handleAssignRole(e) {
+    e.preventDefault();
+    const username = document.getElementById('assign-username').value;
+    const serverIdx = parseInt(document.getElementById('assign-server').value);
+    const role = document.getElementById('assign-role').value;
+    const idx = users.findIndex(function(u) { return u.username === username; });
+    if (idx === -1) { alert('❌'); return; }
+    users[idx].chiefFor = undefined;
+    users[idx].helperFor = undefined;
+    if (role === 'chief') users[idx].chiefFor = serverIdx;
+    else if (role === 'helper') users[idx].helperFor = serverIdx;
+    localStorage.setItem('cristalhills_users', JSON.stringify(users));
+    closeAssignModal();
+    renderUsersList();
+    alert('✅ Назначен!');
+}
+
 function handleAddServer(e) {
     e.preventDefault();
     const name = document.getElementById('new-server-name').value.trim();
     if (!name) return;
-    servers.push({ name: name, status: 'online', description: 'Сервер ' + name, version: '1.20.4', ips: [{ name: 'IP', ip: 'play.' + name.toLowerCase().replace(/\s/g, '') + '.net' }], builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }] });
+    servers.push({
+        name: name,
+        status: 'online',
+        description: 'Сервер ' + name,
+        version: '1.20.4',
+        ips: [{ name: 'IP', ip: 'play.' + name.toLowerCase().replace(/\s/g, '') + '.net' }],
+        builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }],
+        featuresTitle: 'Почему ' + name + '?',
+        features: [
+            { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история' },
+            { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои' },
+            { icon: '🏰', title: 'Строительство', desc: 'Создавай замки' },
+            { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбные игроки' }
+        ],
+        statsTitle: 'Информация о сервере',
+        stats: [
+            { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
+            { icon: '🌍', value: '3+', label: 'Регионов' },
+            { icon: '📜', value: '50+', label: 'Квестов' },
+            { icon: '⚡', value: '24/7', label: 'Работа сервера' }
+        ],
+        chiefs: [],
+        helpers: []
+    });
     localStorage.setItem('cristalhills_servers', JSON.stringify(servers));
     closeAddServerModal();
     renderServersList();
@@ -229,7 +330,7 @@ function updateUI() {
         authLink.innerHTML = '<span class="nav-icon">👤</span>' + currentUser.username;
         authLink.dataset.page = 'profile';
         authLink.style.pointerEvents = 'none';
-        if (currentUser.isAdmin) { adminLink.style.display = 'flex'; if (deleteBtn) deleteBtn.style.display = 'none'; }
+        if (canAccessAdmin()) { adminLink.style.display = 'flex'; if (deleteBtn) deleteBtn.style.display = 'none'; }
         else { adminLink.style.display = 'none'; if (deleteBtn) deleteBtn.style.display = 'inline-flex'; }
     } else {
         authLink.innerHTML = '<span class="nav-icon">🔑</span>Войти';
@@ -266,10 +367,11 @@ function renderServersList() {
     if (!container) return;
     container.innerHTML = '';
     servers.forEach(function(server, idx) {
+        if (!canEditServer(idx)) return;
         const card = document.createElement('div');
         card.className = 'server-card' + (idx === currentServerIndex ? ' active' : '');
         const statusIcon = server.status === 'online' ? '🟢' : server.status === 'maintenance' ? '🟠' : '🔴';
-        card.innerHTML = '<div class="server-info"><span class="server-icon">🌐</span><div><div class="server-name">' + escapeHtml(server.name) + '</div><div class="server-status-text">' + statusIcon + ' ' + server.status + '</div></div></div><div class="server-actions"><button class="btn btn-primary btn-sm" onclick="switchToServer(' + idx + ')">OK</button>' + (idx === 0 ? '' : '<button class="btn btn-danger btn-sm" onclick="deleteServer(' + idx + ')">🗑️</button>') + '</div>';
+        card.innerHTML = '<div class="server-info"><span class="server-icon">🌐</span><div><div class="server-name">' + escapeHtml(server.name) + '</div><div class="server-status-text">' + statusIcon + ' ' + server.status + '</div></div></div><div class="server-actions"><button class="btn btn-primary btn-sm" onclick="switchToServer(' + idx + ')">OK</button>' + (idx === 0 && currentUser.isAdmin ? '<button class="btn btn-danger btn-sm" onclick="deleteServer(' + idx + ')">🗑️</button>' : '') + '</div>';
         container.appendChild(card);
     });
 }
@@ -400,25 +502,33 @@ function renderUsersList() {
         const card = document.createElement('div');
         card.className = 'user-card' + (isAdmin ? ' admin' : '');
         card.dataset.username = u.username.toLowerCase();
+        let roleText = isAdmin ? u.rank : 'Игрок';
+        if (u.chiefFor !== undefined) roleText = '👑 Главный за ' + servers[u.chiefFor].name;
+        else if (u.helperFor !== undefined) roleText = '🔹 Помощник ' + servers[u.helperFor].name;
         let actionsHtml = '';
-        if (!isAdmin && !isCurrentUser) actionsHtml = '<div class="user-actions"><button class="btn btn-primary btn-sm" onclick="openPromoteModal(\'' + escapeHtml(u.username) + '\')">👑</button></div>';
-        else if (isAdmin && u.rank !== 'Гл.Админ' && currentUser && currentUser.username !== u.username) actionsHtml = '<div class="user-actions"><button class="btn btn-danger btn-sm" onclick="demoteUser(\'' + escapeHtml(u.username) + '\')">⬇️</button></div>';
-        card.innerHTML = '<div class="user-row"><span class="user-label">👤</span><span class="user-value">' + escapeHtml(u.username) + '</span></div><div class="user-row"><span class="user-label">🔑</span><span class="user-value">' + escapeHtml(u.password) + '</span></div><div class="user-row"><span class="user-label">📧</span><span class="user-value">' + escapeHtml(u.email || '-') + '</span></div><div class="user-row"><span class="user-label">🏷️</span><span class="user-value">' + (isAdmin ? u.rank : 'Игрок') + '</span></div>' + actionsHtml;
+        if (!isAdmin && !isCurrentUser && currentUser.isAdmin) {
+            actionsHtml = '<div class="user-actions"><button class="btn btn-primary btn-sm" onclick="openAssignModal(\'' + escapeHtml(u.username) + '\')">🎯</button></div>';
+        }
+        card.innerHTML = '<div class="user-row"><span class="user-label">👤</span><span class="user-value">' + escapeHtml(u.username) + '</span></div><div class="user-row"><span class="user-label">🔑</span><span class="user-value">' + escapeHtml(u.password) + '</span></div><div class="user-row"><span class="user-label">📧</span><span class="user-value">' + escapeHtml(u.email || '-') + '</span></div><div class="user-row"><span class="user-label">🏷️</span><span class="user-value">' + roleText + '</span></div>' + actionsHtml;
         container.appendChild(card);
     });
 }
 
-function demoteUser(username) {
-    const idx = users.findIndex(function(u) { return u.username === username; });
-    if (idx === -1) return;
-    users[idx].rank = 'Игрок';
-    localStorage.setItem('cristalhills_users', JSON.stringify(users));
-    renderUsersList();
+function openAssignModal(username) {
+    document.getElementById('assign-username').value = username;
+    const select = document.getElementById('assign-server');
+    select.innerHTML = '';
+    servers.forEach(function(s, idx) {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = s.name;
+        select.appendChild(opt);
+    });
+    document.getElementById('assign-role-modal').classList.add('show');
 }
 
-function filterUsers() {
-    const search = document.getElementById('user-search').value.toLowerCase();
-    document.querySelectorAll('.user-card').forEach(function(card) { card.style.display = card.dataset.username.indexOf(search) !== -1 ? 'grid' : 'none'; });
+function closeAssignModal() {
+    document.getElementById('assign-role-modal').classList.remove('show');
 }
 
 function openPromoteModal(username) { document.getElementById('promote-username').value = username; document.getElementById('promote-modal').classList.add('show'); }
