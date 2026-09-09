@@ -42,8 +42,8 @@
         </section>
 
         <section class="features">
-            <h2 class="section-title">Почему Cristalhills?</h2>
-            <div class="features-grid">
+            <h2 class="section-title" id="features-title">Почему Cristalhills?</h2>
+            <div class="features-grid" id="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">📖</div>
                     <h3>Сюжетные квесты</h3>
@@ -68,8 +68,8 @@
         </section>
 
         <section class="stats">
-            <h2 class="section-title">Информация о сервере</h2>
-            <div class="stats-grid">
+            <h2 class="section-title" id="stats-title">Информация о сервере</h2>
+            <div class="stats-grid" id="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">🎮</div>
                     <div class="stat-number" id="mc-version">1.20.4</div>
@@ -367,6 +367,30 @@
                 <div class="modal-buttons">
                     <button type="submit" class="btn btn-primary">Назначить</button>
                     <button type="button" class="btn btn-secondary" onclick="closePromoteModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="assign-role-modal" class="modal">
+        <div class="modal-content">
+            <h3>🎯 Назначить за сервер</h3>
+            <form id="assign-role-form">
+                <input type="hidden" id="assign-username">
+                <div class="form-group">
+                    <label>Сервер</label>
+                    <select id="assign-server" class="form-input"></select>
+                </div>
+                <div class="form-group">
+                    <label>Роль</label>
+                    <select id="assign-role" class="form-input">
+                        <option value="chief">👑 Главный за сервер</option>
+                        <option value="helper">🔹 Помощник</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Назначить</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAssignModal()">Отмена</button>
                 </div>
             </form>
         </div>
