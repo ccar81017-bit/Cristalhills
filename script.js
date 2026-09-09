@@ -1,5 +1,7 @@
 const ADMINS = [
-    { username: 'nullkotek', password: 'garte454', rank: 'Гл.Админ' }
+    { username: 'nullkotek', password: 'garte454', rank: 'Гл.Админ' },
+    { username: 'kisyna123', password: 'ks%43', rank: 'Мл.Админ' },
+    { username: 'hazbi0002', password: 'hz2@a', rank: 'Мл.Админ' }
 ];
 
 let currentUser = null;
