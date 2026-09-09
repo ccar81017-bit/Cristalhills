@@ -14,7 +14,19 @@ let servers = JSON.parse(localStorage.getItem('cristalhills_servers')) || [
         version: '1.20.4',
         ips: [{ name: 'Основной', ip: 'play.cristalhills.net' }],
         builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }],
-        featuresTitle: 'Почему Cristalhills?'
+        featuresTitle: 'Почему Cristalhills?',
+        features: [
+            { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история с захватывающими приключениями' },
+            { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои и турниры' },
+            { icon: '🏰', title: 'Строительство', desc: 'Создавай замки вместе с друзьями' },
+            { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбное сообщество игроков' }
+        ],
+        stats: [
+            { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
+            { icon: '🌍', value: '3+', label: 'Регионов' },
+            { icon: '📜', value: '50+', label: 'Квестов' },
+            { icon: '⚡', value: '24/7', label: 'Работа сервера' }
+        ]
     }
 ];
 
@@ -52,6 +64,32 @@ function loadServer(idx) {
     if (document.getElementById('hero-description')) document.getElementById('hero-description').textContent = server.description;
     if (document.getElementById('mc-version')) document.getElementById('mc-version').textContent = server.version;
     if (document.getElementById('features-title')) document.getElementById('features-title').textContent = server.featuresTitle || 'Почему ' + server.name + '?';
+    
+    // Рендер иконок и текстов преимуществ
+    if (server.features && server.features.length >= 4) {
+        for (var i = 0; i < 4; i++) {
+            var f = server.features[i];
+            var iconEl = document.getElementById('feature-icon-' + (i + 1));
+            var titleEl = document.getElementById('feature-title-' + (i + 1));
+            var descEl = document.getElementById('feature-desc-' + (i + 1));
+            if (iconEl) iconEl.textContent = f.icon || '⭐';
+            if (titleEl) titleEl.textContent = f.title || '';
+            if (descEl) descEl.textContent = f.desc || '';
+        }
+    }
+    
+    // Рендер иконок и текстов статистики
+    if (server.stats && server.stats.length >= 4) {
+        for (var j = 0; j < 4; j++) {
+            var s = server.stats[j];
+            var iconEl2 = document.getElementById('stat-icon-' + (j + 1));
+            var valueEl = document.getElementById('stat-value-' + (j + 1));
+            var labelEl = document.getElementById('stat-label-' + (j + 1));
+            if (iconEl2) iconEl2.textContent = s.icon || '⭐';
+            if (valueEl) valueEl.textContent = s.value || '';
+            if (labelEl) labelEl.textContent = s.label || '';
+        }
+    }
     
     const ipContainer = document.getElementById('ip-buttons');
     if (ipContainer) {
@@ -242,7 +280,19 @@ function handleAddServer(e) {
         version: '1.20.4',
         ips: [{ name: 'IP', ip: 'play.' + name.toLowerCase().replace(/\s/g, '') + '.net' }],
         builds: [{ name: 'Сборка', url: 'https://example.com/build.zip' }],
-        featuresTitle: 'Почему ' + name + '?'
+        featuresTitle: 'Почему ' + name + '?',
+        features: [
+            { icon: '📖', title: 'Сюжетные квесты', desc: 'Уникальная история' },
+            { icon: '⚔️', title: 'PvP сражения', desc: 'Сбалансированные бои' },
+            { icon: '🏰', title: 'Строительство', desc: 'Создавай замки' },
+            { icon: '👥', title: 'Комьюнити', desc: 'Дружелюбные игроки' }
+        ],
+        stats: [
+            { icon: '🎮', value: '1.20.4', label: 'Версия Minecraft' },
+            { icon: '🌍', value: '3+', label: 'Регионов' },
+            { icon: '📜', value: '50+', label: 'Квестов' },
+            { icon: '⚡', value: '24/7', label: 'Работа сервера' }
+        ]
     });
     localStorage.setItem('cristalhills_servers', JSON.stringify(servers));
     closeAddServerModal();
@@ -255,6 +305,7 @@ function logout() {
     currentUser = null;
     localStorage.removeItem('cristalhills_current');
     updateUI();
+    updateProfile();
     navigateTo('home');
 }
 
@@ -283,13 +334,28 @@ function updateUI() {
 }
 
 function updateProfile() {
-    if (!currentUser) return;
-    document.getElementById('profile-username').textContent = currentUser.username;
-    document.getElementById('profile-rank').textContent = currentUser.rank || 'Игрок';
-    document.getElementById('profile-avatar-letter').textContent = currentUser.username[0].toUpperCase();
-    document.getElementById('profile-email').textContent = currentUser.email || 'не указан';
-    document.getElementById('profile-reg-date').textContent = currentUser.regDate || '-';
-    document.getElementById('profile-last-login').textContent = currentUser.lastLogin || '-';
+    const usernameEl = document.getElementById('profile-username');
+    const rankEl = document.getElementById('profile-rank');
+    const avatarEl = document.getElementById('profile-avatar-letter');
+    const emailEl = document.getElementById('profile-email');
+    const regDateEl = document.getElementById('profile-reg-date');
+    const lastLoginEl = document.getElementById('profile-last-login');
+    
+    if (currentUser) {
+        if (usernameEl) usernameEl.textContent = currentUser.username;
+        if (rankEl) rankEl.textContent = currentUser.rank || 'Игрок';
+        if (avatarEl) avatarEl.textContent = currentUser.username[0].toUpperCase();
+        if (emailEl) emailEl.textContent = currentUser.email || 'не указан';
+        if (regDateEl) regDateEl.textContent = currentUser.regDate || '-';
+        if (lastLoginEl) lastLoginEl.textContent = currentUser.lastLogin || '-';
+    } else {
+        if (usernameEl) usernameEl.textContent = 'Гость';
+        if (rankEl) rankEl.textContent = 'Игрок';
+        if (avatarEl) avatarEl.textContent = 'G';
+        if (emailEl) emailEl.textContent = 'не указан';
+        if (regDateEl) regDateEl.textContent = '-';
+        if (lastLoginEl) lastLoginEl.textContent = '-';
+    }
 }
 
 function switchAdminTab(tabName) {
@@ -338,6 +404,8 @@ function loadAdminSettings() {
     document.getElementById('admin-features-title').value = server.featuresTitle || 'Почему ' + server.name + '?';
     renderAdminIps();
     renderAdminBuilds();
+    renderAdminFeaturesCustom();
+    renderAdminStatsCustom();
 }
 
 function renderAdminIps() {
@@ -366,6 +434,38 @@ function renderAdminBuilds() {
         div.style.gap = '10px';
         div.style.marginBottom = '10px';
         div.innerHTML = '<input type="text" class="form-input" value="' + escapeHtml(item.name) + '" data-idx="' + idx + '" data-field="name" style="flex:1;"><input type="text" class="form-input" value="' + escapeHtml(item.url) + '" data-idx="' + idx + '" data-field="url" style="flex:1;"><button class="btn btn-danger" onclick="removeBuild(' + idx + ')">🗑️</button>';
+        container.appendChild(div);
+    });
+}
+
+function renderAdminFeaturesCustom() {
+    const container = document.getElementById('admin-features-custom');
+    if (!container) return;
+    container.innerHTML = '';
+    const server = servers[currentServerIndex];
+    (server.features || []).forEach(function(f, idx) {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.marginBottom = '8px';
+        div.style.alignItems = 'center';
+        div.innerHTML = '<span style="min-width:20px;">' + (idx + 1) + '.</span><input type="text" class="form-input" value="' + escapeHtml(f.icon || '⭐') + '" data-fidx="' + idx + '" data-ffield="icon" style="width:50px;" placeholder="📖"><input type="text" class="form-input" value="' + escapeHtml(f.title || '') + '" data-fidx="' + idx + '" data-ffield="title" style="flex:1;" placeholder="Название"><input type="text" class="form-input" value="' + escapeHtml(f.desc || '') + '" data-fidx="' + idx + '" data-ffield="desc" style="flex:2;" placeholder="Описание">';
+        container.appendChild(div);
+    });
+}
+
+function renderAdminStatsCustom() {
+    const container = document.getElementById('admin-stats-custom');
+    if (!container) return;
+    container.innerHTML = '';
+    const server = servers[currentServerIndex];
+    (server.stats || []).forEach(function(s, idx) {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.marginBottom = '8px';
+        div.style.alignItems = 'center';
+        div.innerHTML = '<span style="min-width:20px;">' + (idx + 1) + '.</span><input type="text" class="form-input" value="' + escapeHtml(s.icon || '⭐') + '" data-sidx="' + idx + '" data-sfield="icon" style="width:50px;" placeholder="🎮"><input type="text" class="form-input" value="' + escapeHtml(s.value || '') + '" data-sidx="' + idx + '" data-sfield="value" style="width:80px;" placeholder="1.20.4"><input type="text" class="form-input" value="' + escapeHtml(s.label || '') + '" data-sidx="' + idx + '" data-sfield="label" style="flex:1;" placeholder="Версия">';
         container.appendChild(div);
     });
 }
@@ -407,9 +507,9 @@ function saveAdminSettings() {
     
     const ipInputs = document.querySelectorAll('#admin-ips-list input');
     const newIps = [];
-    for (let i = 0; i < ipInputs.length; i += 2) {
-        const nameInput = ipInputs[i];
-        const ipInput = ipInputs[i + 1];
+    for (var i = 0; i < ipInputs.length; i += 2) {
+        var nameInput = ipInputs[i];
+        var ipInput = ipInputs[i + 1];
         if (nameInput && ipInput) {
             newIps.push({ name: nameInput.value, ip: ipInput.value });
         }
@@ -418,14 +518,38 @@ function saveAdminSettings() {
     
     const buildInputs = document.querySelectorAll('#admin-builds-list input');
     const newBuilds = [];
-    for (let i = 0; i < buildInputs.length; i += 2) {
-        const nameInput = buildInputs[i];
-        const urlInput = buildInputs[i + 1];
-        if (nameInput && urlInput) {
-            newBuilds.push({ name: nameInput.value, url: urlInput.value });
+    for (var j = 0; j < buildInputs.length; j += 2) {
+        var nameInput2 = buildInputs[j];
+        var urlInput = buildInputs[j + 1];
+        if (nameInput2 && urlInput) {
+            newBuilds.push({ name: nameInput2.value, url: urlInput.value });
         }
     }
     server.builds = newBuilds;
+    
+    // Сохраняем кастомизацию features
+    var newFeatures = [];
+    for (var k = 0; k < 4; k++) {
+        var iconInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="icon"]');
+        var titleInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="title"]');
+        var descInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="desc"]');
+        if (iconInput && titleInput && descInput) {
+            newFeatures.push({ icon: iconInput.value, title: titleInput.value, desc: descInput.value });
+        }
+    }
+    server.features = newFeatures;
+    
+    // Сохраняем кастомизацию stats
+    var newStats = [];
+    for (var m = 0; m < 4; m++) {
+        var iconInput2 = document.querySelector('input[data-sidx="' + m + '"][data-sfield="icon"]');
+        var valueInput = document.querySelector('input[data-sidx="' + m + '"][data-sfield="value"]');
+        var labelInput = document.querySelector('input[data-sidx="' + m + '"][data-sfield="label"]');
+        if (iconInput2 && valueInput && labelInput) {
+            newStats.push({ icon: iconInput2.value, value: valueInput.value, label: labelInput.value });
+        }
+    }
+    server.stats = newStats;
     
     localStorage.setItem('cristalhills_servers', JSON.stringify(servers));
     loadServer(currentServerIndex);
