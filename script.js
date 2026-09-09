@@ -454,15 +454,17 @@ function renderAdminFeaturesCustom() {
     if (!container) return;
     container.innerHTML = '';
     const server = servers[currentServerIndex];
-    (server.features || []).forEach(function(f, idx) {
-        const div = document.createElement('div');
+    var features = server.features || [];
+    for (var i = 0; i < 4; i++) {
+        var f = features[i] || { icon: '⭐', title: '', desc: '' };
+        var div = document.createElement('div');
         div.style.display = 'flex';
         div.style.gap = '8px';
         div.style.marginBottom = '8px';
         div.style.alignItems = 'center';
-        div.innerHTML = '<span style="min-width:20px;">' + (idx + 1) + '.</span><input type="text" class="form-input" value="' + escapeHtml(f.icon || '⭐') + '" data-fidx="' + idx + '" data-ffield="icon" style="width:50px;" placeholder="📖"><input type="text" class="form-input" value="' + escapeHtml(f.title || '') + '" data-fidx="' + idx + '" data-ffield="title" style="flex:1;" placeholder="Название"><input type="text" class="form-input" value="' + escapeHtml(f.desc || '') + '" data-fidx="' + idx + '" data-ffield="desc" style="flex:2;" placeholder="Описание">';
+        div.innerHTML = '<span style="min-width:20px;">' + (i + 1) + '.</span><input type="text" class="form-input" value="' + escapeHtml(f.icon) + '" id="f-icon-' + i + '" style="width:50px;" placeholder="📖"><input type="text" class="form-input" value="' + escapeHtml(f.title) + '" id="f-title-' + i + '" style="flex:1;" placeholder="Название"><input type="text" class="form-input" value="' + escapeHtml(f.desc) + '" id="f-desc-' + i + '" style="flex:2;" placeholder="Описание">';
         container.appendChild(div);
-    });
+    }
 }
 
 function renderAdminStatsCustom() {
@@ -470,15 +472,17 @@ function renderAdminStatsCustom() {
     if (!container) return;
     container.innerHTML = '';
     const server = servers[currentServerIndex];
-    (server.stats || []).forEach(function(s, idx) {
-        const div = document.createElement('div');
+    var stats = server.stats || [];
+    for (var i = 0; i < 4; i++) {
+        var s = stats[i] || { icon: '⭐', value: '', label: '' };
+        var div = document.createElement('div');
         div.style.display = 'flex';
         div.style.gap = '8px';
         div.style.marginBottom = '8px';
         div.style.alignItems = 'center';
-        div.innerHTML = '<span style="min-width:20px;">' + (idx + 1) + '.</span><input type="text" class="form-input" value="' + escapeHtml(s.icon || '⭐') + '" data-sidx="' + idx + '" data-sfield="icon" style="width:50px;" placeholder="🎮"><input type="text" class="form-input" value="' + escapeHtml(s.value || '') + '" data-sidx="' + idx + '" data-sfield="value" style="width:80px;" placeholder="1.20.4"><input type="text" class="form-input" value="' + escapeHtml(s.label || '') + '" data-sidx="' + idx + '" data-sfield="label" style="flex:1;" placeholder="Версия">';
+        div.innerHTML = '<span style="min-width:20px;">' + (i + 1) + '.</span><input type="text" class="form-input" value="' + escapeHtml(s.icon) + '" id="s-icon-' + i + '" style="width:50px;" placeholder="🎮"><input type="text" class="form-input" value="' + escapeHtml(s.value) + '" id="s-value-' + i + '" style="width:80px;" placeholder="1.20.4"><input type="text" class="form-input" value="' + escapeHtml(s.label) + '" id="s-label-' + i + '" style="flex:1;" placeholder="Версия">';
         container.appendChild(div);
-    });
+    }
 }
 
 function addNewIpField() {
@@ -540,9 +544,9 @@ function saveAdminSettings() {
     
     var newFeatures = [];
     for (var k = 0; k < 4; k++) {
-        var iconInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="icon"]');
-        var titleInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="title"]');
-        var descInput = document.querySelector('input[data-fidx="' + k + '"][data-ffield="desc"]');
+        var iconInput = document.getElementById('f-icon-' + k);
+        var titleInput = document.getElementById('f-title-' + k);
+        var descInput = document.getElementById('f-desc-' + k);
         if (iconInput && titleInput && descInput) {
             newFeatures.push({ icon: iconInput.value, title: titleInput.value, desc: descInput.value });
         }
@@ -551,9 +555,9 @@ function saveAdminSettings() {
     
     var newStats = [];
     for (var m = 0; m < 4; m++) {
-        var iconInput2 = document.querySelector('input[data-sidx="' + m + '"][data-sfield="icon"]');
-        var valueInput = document.querySelector('input[data-sidx="' + m + '"][data-sfield="value"]');
-        var labelInput = document.querySelector('input[data-sidx="' + m + '"][data-sfield="label"]');
+        var iconInput2 = document.getElementById('s-icon-' + m);
+        var valueInput = document.getElementById('s-value-' + m);
+        var labelInput = document.getElementById('s-label-' + m);
         if (iconInput2 && valueInput && labelInput) {
             newStats.push({ icon: iconInput2.value, value: valueInput.value, label: labelInput.value });
         }
