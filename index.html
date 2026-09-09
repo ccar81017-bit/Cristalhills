@@ -45,24 +45,24 @@
             <h2 class="section-title" id="features-title">Почему Cristalhills?</h2>
             <div class="features-grid" id="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">📖</div>
-                    <h3>Сюжетные квесты</h3>
-                    <p>Уникальная история с захватывающими приключениями</p>
+                    <div class="feature-icon" id="feature-icon-1">📖</div>
+                    <h3 id="feature-title-1">Сюжетные квесты</h3>
+                    <p id="feature-desc-1">Уникальная история с захватывающими приключениями</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚔️</div>
-                    <h3>PvP сражения</h3>
-                    <p>Сбалансированные бои и турниры</p>
+                    <div class="feature-icon" id="feature-icon-2">⚔️</div>
+                    <h3 id="feature-title-2">PvP сражения</h3>
+                    <p id="feature-desc-2">Сбалансированные бои и турниры</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🏰</div>
-                    <h3>Строительство</h3>
-                    <p>Создавай замки вместе с друзьями</p>
+                    <div class="feature-icon" id="feature-icon-3">🏰</div>
+                    <h3 id="feature-title-3">Строительство</h3>
+                    <p id="feature-desc-3">Создавай замки вместе с друзьями</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">👥</div>
-                    <h3>Комьюнити</h3>
-                    <p>Дружелюбное сообщество игроков</p>
+                    <div class="feature-icon" id="feature-icon-4">👥</div>
+                    <h3 id="feature-title-4">Комьюнити</h3>
+                    <p id="feature-desc-4">Дружелюбное сообщество игроков</p>
                 </div>
             </div>
         </section>
@@ -71,24 +71,24 @@
             <h2 class="section-title" id="stats-title">Информация о сервере</h2>
             <div class="stats-grid" id="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">🎮</div>
-                    <div class="stat-number" id="mc-version">1.20.4</div>
-                    <div class="stat-label">Версия Minecraft</div>
+                    <div class="stat-icon" id="stat-icon-1">🎮</div>
+                    <div class="stat-number" id="stat-value-1">1.20.4</div>
+                    <div class="stat-label" id="stat-label-1">Версия Minecraft</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">🌍</div>
-                    <div class="stat-number">3+</div>
-                    <div class="stat-label">Регионов</div>
+                    <div class="stat-icon" id="stat-icon-2">🌍</div>
+                    <div class="stat-number" id="stat-value-2">3+</div>
+                    <div class="stat-label" id="stat-label-2">Регионов</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">📜</div>
-                    <div class="stat-number">50+</div>
-                    <div class="stat-label">Квестов</div>
+                    <div class="stat-icon" id="stat-icon-3">📜</div>
+                    <div class="stat-number" id="stat-value-3">50+</div>
+                    <div class="stat-label" id="stat-label-3">Квестов</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">⚡</div>
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Работа сервера</div>
+                    <div class="stat-icon" id="stat-icon-4">⚡</div>
+                    <div class="stat-number" id="stat-value-4">24/7</div>
+                    <div class="stat-label" id="stat-label-4">Работа сервера</div>
                 </div>
             </div>
         </section>
@@ -252,6 +252,16 @@
                         <label>Сборки</label>
                         <div id="admin-builds-list"></div>
                         <button class="btn btn-secondary btn-sm" onclick="addNewBuildField()" style="margin-top:10px;">+ Сборка</button>
+                    </div>
+                    <hr style="border-color:var(--border);margin:20px 0;">
+                    <h4 style="margin-bottom:15px;">🎨 Кастомизация иконок</h4>
+                    <div class="form-group">
+                        <label>Преимущества (4 карточки)</label>
+                        <div id="admin-features-custom"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Статистика (4 карточки)</label>
+                        <div id="admin-stats-custom"></div>
                     </div>
                     <button class="btn btn-primary btn-lg" onclick="saveAdminSettings()">💾 Сохранить</button>
                     <div id="admin-save-msg" class="success-message"></div>
